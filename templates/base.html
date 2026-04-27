@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}CipherLab{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular'],
+          },
+          colors: {
+            ink: {
+              900: '#0b1020',
+              800: '#0f172a',
+              700: '#1e293b',
+            },
+            brand: {
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background: radial-gradient(1200px 600px at 10% -10%, rgba(139,92,246,0.25), transparent 60%),
+                       radial-gradient(900px 500px at 110% 10%, rgba(56,189,248,0.18), transparent 60%),
+                       #0b1020; }
+  </style>
+</head>
+<body class="min-h-screen text-slate-100 font-sans">
+  <nav class="border-b border-white/10 backdrop-blur bg-ink-900/60 sticky top-0 z-30">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="{{ url_for('index') }}" class="flex items-center gap-2 group">
+        <span class="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-sky-400 text-white font-bold">C</span>
+        <span class="text-lg font-semibold tracking-tight">CipherLab</span>
+      </a>
+      <div class="flex items-center gap-1 text-sm">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('dashboard') }}" class="px-3 py-1.5 rounded-md hover:bg-white/10 {% if request.endpoint == 'dashboard' %}bg-white/10{% endif %}">Dashboard</a>
+          <a href="{{ url_for('history') }}" class="px-3 py-1.5 rounded-md hover:bg-white/10 {% if request.endpoint == 'history' %}bg-white/10{% endif %}">History</a>
+          <span class="px-3 py-1.5 text-slate-400 hidden sm:inline">@{{ current_user.username }}</span>
+          <a href="{{ url_for('logout') }}" class="px-3 py-1.5 rounded-md bg-white/5 hover:bg-white/10 border border-white/10">Logout</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="px-3 py-1.5 rounded-md hover:bg-white/10">Login</a>
+          <a href="{{ url_for('register') }}" class="px-3 py-1.5 rounded-md bg-brand-600 hover:bg-brand-500">Sign up</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="space-y-2 mb-6">
+          {% for category, msg in messages %}
+            <div class="px-4 py-3 rounded-lg border text-sm
+              {% if category == 'error' %}bg-rose-500/10 border-rose-500/30 text-rose-200
+              {% elif category == 'success' %}bg-emerald-500/10 border-emerald-500/30 text-emerald-200
+              {% elif category == 'warning' %}bg-amber-500/10 border-amber-500/30 text-amber-100
+              {% else %}bg-white/5 border-white/10 text-slate-200{% endif %}">
+              {{ msg }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="max-w-6xl mx-auto px-4 py-8 text-xs text-slate-500">
+    Built with Flask &middot; Caesar &amp; Vigenere over the printable ASCII range.
+  </footer>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}History &middot; CipherLab{% endblock %}
+{% block content %}
+<div class="rounded-2xl border border-white/10 bg-ink-800/60 backdrop-blur p-6 shadow-xl">
+  <div class="flex items-start justify-between gap-4 flex-wrap">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Activity history</h1>
+      <p class="text-slate-400 text-sm mt-1">Every encryption and decryption you run is recorded here.</p>
+    </div>
+    {% if entries %}
+    <form method="post" action="{{ url_for('clear_history') }}"
+          onsubmit="return confirm('Delete all history entries?');">
+      <button type="submit"
+              class="rounded-lg border border-rose-500/30 text-rose-200 hover:bg-rose-500/10 px-3 py-1.5 text-sm">Clear history</button>
+    </form>
+    {% endif %}
+  </div>
+
+  <div class="mt-6 overflow-hidden rounded-xl border border-white/10">
+    <table class="w-full text-sm">
+      <thead class="bg-white/5 text-slate-300">
+        <tr>
+          <th class="text-left font-medium px-4 py-2.5">Action</th>
+          <th class="text-left font-medium px-4 py-2.5 w-56">Timestamp</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5">
+        {% for entry in entries %}
+        <tr class="hover:bg-white/5">
+          <td class="px-4 py-2.5">
+            <span class="inline-flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full
+                {% if 'Encryption' in entry.action_name %}bg-emerald-400{% else %}bg-sky-400{% endif %}"></span>
+              {{ entry.action_name }}
+            </span>
+          </td>
+          <td class="px-4 py-2.5 font-mono text-slate-300">{{ entry.timestamp|fmt_dt }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="2" class="px-4 py-10 text-center text-slate-400">
+            No records yet. Head to the
+            <a href="{{ url_for('dashboard') }}" class="text-brand-400 hover:text-brand-300">dashboard</a>
+            and run a cipher.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
